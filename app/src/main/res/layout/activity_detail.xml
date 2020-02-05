@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="documentID"
+            type="String" />
+
+        <variable
+            name="sprint"
+            type="com.dong.edu.data.Sprint" />
+    </data>
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/toolbar_container"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/appbar_layout_height">
+
+            <com.google.android.material.appbar.CollapsingToolbarLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layout_scrollFlags="scroll|exitUntilCollapsed">
+
+                <androidx.appcompat.widget.Toolbar
+                    android:id="@+id/toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="?actionBarSize"
+                    app:layout_collapseMode="pin" />
+
+
+            </com.google.android.material.appbar.CollapsingToolbarLayout>
+
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:context="com.dong.edu.DetailActivity">
+
+
+                <TextView
+
+                    android:layout_width="135dp"
+                    android:layout_height="30dp"
+                    android:layout_marginStart="52dp"
+                    android:layout_marginTop="336dp"
+                    android:hint="documentID"
+                    android:text="@{documentID}"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+
+                    android:layout_width="135dp"
+                    android:layout_height="30dp"
+                    android:layout_marginStart="52dp"
+                    android:layout_marginTop="284dp"
+                    android:hint="sprint Name"
+                    android:text="@{sprint.sprintName}"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+
+                    android:layout_width="135dp"
+                    android:layout_height="30dp"
+                    android:layout_marginStart="52dp"
+                    android:layout_marginTop="228dp"
+                    android:hint="sprint message"
+                    android:text="@{sprint.message}"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+
+                    android:layout_width="135dp"
+                    android:layout_height="30dp"
+                    android:layout_marginStart="60dp"
+                    android:layout_marginTop="164dp"
+                    android:hint="sprint started date"
+                    android:text="@{sprint.startedDateString}"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+
+                    android:layout_width="135dp"
+                    android:layout_height="30dp"
+                    android:layout_marginStart="52dp"
+                    android:layout_marginTop="88dp"
+                    android:hint="sprint ended date"
+                    android:text="@{sprint.endedDateString}"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:layout_width="@dimen/textview_width"
+                    android:layout_height="@dimen/textview_height"
+                    android:onClick="openDetailDay"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:text="Open a new day"
+                    tools:text="create a new day" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </ScrollView>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+</layout>
