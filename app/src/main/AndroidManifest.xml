@@ -11,11 +11,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".DetailDayActivity"></activity>
+        <activity android:name=".DetailDayActivity"
+            android:parentActivityName=".DetailActivity"></activity>
         <activity android:name=".NewDayActivity" />
         <activity
             android:name=".DetailActivity"
-            android:parentActivityName=".MainActivity" />
+            android:parentActivityName=".MainActivity"
+            android:launchMode="singleTop"/>
         <activity android:name=".AddActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>

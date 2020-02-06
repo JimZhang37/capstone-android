@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.dong.edu.data.Sprint;
 import com.dong.edu.databinding.ActivityDetailBinding;
+import com.dong.edu.util.AdapterDaysList;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -38,9 +39,9 @@ public class DetailActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private String mDocumentID;
     private Sprint mSprint;
-    private String tag;
     private FirebaseUser mCurrentUser;
     public static final String INTENT_SPRINT_DAY_NUM = "INTENT_SPRINT_DAY_NUM";
+    private AdapterDaysList adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +58,10 @@ public class DetailActivity extends AppCompatActivity {
         ActionBar ab = getSupportActionBar();
         ab.setDisplayHomeAsUpEnabled(true);
         ab.setTitle("Detailed Sprint");
+
+        adapter = new AdapterDaysList();
+        dataBinding.recyclerDays.setAdapter(adapter);
+
     }
 
     @Override
@@ -65,6 +70,7 @@ public class DetailActivity extends AppCompatActivity {
         mCurrentUser = mFirebaseAuth.getCurrentUser();
         mUID = mCurrentUser.getUid();
         getData();
+        getDays();
     }
 
     @Override
@@ -172,5 +178,23 @@ public class DetailActivity extends AppCompatActivity {
         intent.putExtra(INTENT_SPRINT_ID_DETAIL,mDocumentID);
         intent.putExtra(INTENT_SPRINT_DAY_NUM, mSprint.getDayNumber());
         startActivity(intent);
+    }
+
+    private void getDays() {
+        if (mUID != null) {
+            db.collection(mUID)
+                    .document(mDocumentID)
+                    .collection("Days")
+                    .get()
+                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            if (task.isSuccessful()) {
+                                adapter.setupData(task.getResult().getDocuments());
+
+                            }
+                        }
+                    });
+        }
     }
 }

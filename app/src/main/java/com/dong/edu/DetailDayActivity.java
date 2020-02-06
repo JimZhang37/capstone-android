@@ -2,6 +2,7 @@ package com.dong.edu;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 
@@ -61,6 +62,11 @@ public class DetailDayActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
         mFirebaseStorage = FirebaseStorage.getInstance();
 
+
+        setSupportActionBar(dataBinding.toolbar);
+        ActionBar ab = getSupportActionBar();
+        ab.setDisplayHomeAsUpEnabled(true);
+        ab.setTitle("Create a New Day");
     }
 
 

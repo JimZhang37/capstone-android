@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity implements AdapterSprintList
 
         setSupportActionBar(dataBinding.toolbar);
         ActionBar ab = getSupportActionBar();
-        ab.setDisplayHomeAsUpEnabled(true);
+//        ab.setDisplayHomeAsUpEnabled(true);
         ab.setTitle("Sprint List");
 
     }
