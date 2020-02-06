@@ -18,6 +18,7 @@ import com.dong.edu.util.AdapterDaysList;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -27,8 +28,8 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.Arrays;
 import java.util.List;
 
-public class DetailActivity extends AppCompatActivity implements AdapterDaysList.DayClickListener {
-    private static final String TAG = DetailActivity.class.getSimpleName();
+public class SprintDetailActivity extends AppCompatActivity implements AdapterDaysList.DayClickListener {
+    private static final String TAG = SprintDetailActivity.class.getSimpleName();
     public static final String INTENT_SPRINT_ID_DETAIL = "SPRINT_UID_DETAIL";
     public static final String INTENT_INT_POSITION = "INTENT_INT_POSITION";
     private String mUID;
@@ -50,7 +51,7 @@ public class DetailActivity extends AppCompatActivity implements AdapterDaysList
         dataBinding = DataBindingUtil.setContentView(this, R.layout.activity_detail);
 
 
-        mDocumentID = getIntent().getStringExtra(MainActivity.INTENT_SPRINT_ID);
+        mDocumentID = getIntent().getStringExtra(SprintListActivity.INTENT_SPRINT_ID);
         dataBinding.setDocumentID(mDocumentID);
 
         mFirebaseAuth = FirebaseAuth.getInstance();
@@ -92,7 +93,7 @@ public class DetailActivity extends AppCompatActivity implements AdapterDaysList
                 public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                     FirebaseUser user = firebaseAuth.getCurrentUser();
                     if (user != null) {
-                        Toast.makeText(DetailActivity.this, "user is signed in!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(SprintDetailActivity.this, "user is signed in!", Toast.LENGTH_SHORT).show();
 
                         onSignInInitilizer(user.getDisplayName(), user.getUid());
 
@@ -171,11 +172,12 @@ public class DetailActivity extends AppCompatActivity implements AdapterDaysList
         }
     }
 
-    public void openAddlDay(View view){
-        if(mSprint.getDayNumber() == null){
+    public void openAddDay(View view){
+        if(mSprint == null || mSprint.getDayNumber() == null){
+            Snackbar.make(dataBinding.coordinatorSprintDetail, "Please wait",Snackbar.LENGTH_SHORT).show();
             return;
         }
-        Intent intent = new Intent(this, AddDayActivity.class);
+        Intent intent = new Intent(this, DayAddActivity.class);
         intent.putExtra(INTENT_SPRINT_ID_DETAIL,mDocumentID);
         intent.putExtra(INTENT_SPRINT_DAY_NUM, mSprint.getDayNumber());
         startActivity(intent);
@@ -201,7 +203,7 @@ public class DetailActivity extends AppCompatActivity implements AdapterDaysList
 
     @Override
     public void onDayItemClick(int position) {
-        Intent intent = new Intent(this, DetailDayActivity.class);
+        Intent intent = new Intent(this, DayDetailActivity.class);
         intent.putExtra(INTENT_SPRINT_ID_DETAIL,mDocumentID);
         intent.putExtra(INTENT_INT_POSITION, position);
         startActivity(intent);

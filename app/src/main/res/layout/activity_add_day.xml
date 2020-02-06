@@ -42,7 +42,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
-            android:paddingTop="@dimen/appbar_layout_height">
+            >
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -81,10 +81,16 @@
                         android:text="@={myDay.description}" />
                 </com.google.android.material.textfield.TextInputLayout>
 
+                <ProgressBar
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/spinner"/>
+
                 <ImageView
                     android:id="@+id/image_to_upload"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
+
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/button_select_photo"

@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.dong.edu.data.Day;
@@ -32,8 +33,8 @@ import com.google.firebase.storage.UploadTask;
 import java.util.Arrays;
 import java.util.List;
 
-public class AddDayActivity extends AppCompatActivity {
-    private static final String TAG = AddDayActivity.class.getSimpleName();
+public class DayAddActivity extends AppCompatActivity {
+    private static final String TAG = DayAddActivity.class.getSimpleName();
     private String mDocumentId;
     private FirebaseAuth mFirebaseAuth;
     private FirebaseFirestore db;
@@ -55,8 +56,8 @@ public class AddDayActivity extends AppCompatActivity {
         mDay = new Day();
         dataBinding.setMyDay(mDay);
 
-        mDocumentId = getIntent().getStringExtra(DetailActivity.INTENT_SPRINT_ID_DETAIL);
-        mDayNumber = getIntent().getStringExtra(DetailActivity.INTENT_SPRINT_DAY_NUM);
+        mDocumentId = getIntent().getStringExtra(SprintDetailActivity.INTENT_SPRINT_ID_DETAIL);
+        mDayNumber = getIntent().getStringExtra(SprintDetailActivity.INTENT_SPRINT_DAY_NUM);
         mFirebaseAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         mFirebaseStorage = FirebaseStorage.getInstance();
@@ -66,6 +67,8 @@ public class AddDayActivity extends AppCompatActivity {
         ActionBar ab = getSupportActionBar();
         ab.setDisplayHomeAsUpEnabled(true);
         ab.setTitle("Create a New Day");
+
+        dataBinding.spinner.setVisibility(View.GONE);
     }
 
 
@@ -87,7 +90,7 @@ public class AddDayActivity extends AppCompatActivity {
                 public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                     FirebaseUser user = firebaseAuth.getCurrentUser();
                     if (user != null) {
-                        Toast.makeText(AddDayActivity.this, "user is signed in!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(DayAddActivity.this, "user is signed in!", Toast.LENGTH_SHORT).show();
 
                         onSignInInitilizer(user.getDisplayName(), user.getUid());
 
@@ -129,6 +132,8 @@ public class AddDayActivity extends AppCompatActivity {
         if (requestCode == RC_PHOTO_PICKER) {
             if (resultCode == RESULT_OK) {
                 //TODO progress bar, start
+                dataBinding.spinner.setVisibility(View.VISIBLE);
+
                 Uri selectedImage = data.getData();
                 dataBinding.imageToUpload.setImageURI(selectedImage);
                 StorageReference photoRef = storageReference.child(selectedImage.getLastPathSegment());
@@ -152,7 +157,7 @@ public class AddDayActivity extends AppCompatActivity {
 
 
                             //TODO progress bar stop, save downloaduri, handle activity lifecycle, etc.
-
+                            dataBinding.spinner.setVisibility(View.GONE);
 
                         } else {
                             // Handle failures
@@ -179,6 +184,13 @@ public class AddDayActivity extends AppCompatActivity {
 
     public void saveDayToCloud(View view) {
 //        Log.d(TAG, "value of mySprint is " + mSprint.getSprintName() + mSprint.getSprintTime());
+        if(mDay.getDescription() == "" || mDay.getPictureUri()==null
+        || mDay.getPictureUri()==""|| mDay.getDescription()==null){
+            Snackbar.make(dataBinding.coordinatorDay,"Please input values", Snackbar.LENGTH_SHORT).show();
+            Toast.makeText(DayAddActivity.this,"Pleae input",Toast.LENGTH_SHORT);
+            return;
+        }
+
         db.collection(mUID)
                 .document(mDocumentId)
                 .collection("Days")
@@ -188,8 +200,7 @@ public class AddDayActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(Void aVoid) {
 
-                        Snackbar.make(dataBinding.coordinatorDay, "Day uploaded", Snackbar.LENGTH_SHORT);
-
+                        finish();
                     }
                 })
 

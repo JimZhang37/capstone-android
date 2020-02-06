@@ -2,7 +2,7 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.dong.edu.DetailActivity">
+    tools:context="com.dong.edu.SprintDetailActivity">
 
     <data>
 
@@ -16,6 +16,7 @@
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/coordinator_sprint_detail"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -117,7 +118,7 @@
                     android:layout_width="@dimen/textview_width"
                     android:layout_height="@dimen/textview_height"
                     android:layout_marginTop="32dp"
-                    android:onClick="openAddlDay"
+                    android:onClick="openAddDay"
                     android:text="Open a new day"
                     app:layout_constraintStart_toStartOf="@+id/textView3"
                     app:layout_constraintTop_toBottomOf="@+id/textView3"

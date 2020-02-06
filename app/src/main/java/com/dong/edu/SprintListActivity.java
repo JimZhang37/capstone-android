@@ -14,30 +14,24 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import android.view.View;
-import android.widget.Button;
 import android.widget.Toast;
-import android.widget.TextView;
 
-import com.dong.edu.data.Sprint;
 import com.dong.edu.databinding.ActivityMainBinding;
 import com.dong.edu.util.AdapterSprintList;
 import com.firebase.ui.auth.AuthUI;
-import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 
-public class MainActivity extends AppCompatActivity implements AdapterSprintList.SprintClickListener {
+public class SprintListActivity extends AppCompatActivity implements AdapterSprintList.SprintClickListener {
     public static final int RC_SIGN_IN = 1;
     public static final String INTENT_SPRINT_ID = "SPRINT_UID";
 
@@ -49,6 +43,7 @@ public class MainActivity extends AppCompatActivity implements AdapterSprintList
 
     private String mUID;
     private FirebaseFirestore db;
+    private DocumentReference docRef;
     private AdapterSprintList adapter;
     private FirebaseUser mCurrentUser;
     @Override
@@ -57,6 +52,7 @@ public class MainActivity extends AppCompatActivity implements AdapterSprintList
         dataBinding = DataBindingUtil.setContentView(this,R.layout.activity_main);
 
         db = FirebaseFirestore.getInstance();
+
         adapter = new AdapterSprintList(this);
         dataBinding.recyclerView.setAdapter(adapter);
 
@@ -102,7 +98,7 @@ public class MainActivity extends AppCompatActivity implements AdapterSprintList
                 public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                     FirebaseUser user = firebaseAuth.getCurrentUser();
                     if (user != null) {
-                        Toast.makeText(MainActivity.this, "user is signed in!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(SprintListActivity.this, "user is signed in!", Toast.LENGTH_SHORT).show();
 
                         onSignInInitilizer(user.getDisplayName(), user.getUid());
 
@@ -166,7 +162,7 @@ public class MainActivity extends AppCompatActivity implements AdapterSprintList
                 AuthUI.getInstance().signOut(this);
                 break;
             case R.id.menu_add:
-                Intent intent = new Intent(this,AddActivity.class);
+                Intent intent = new Intent(this, SprintAddActivity.class);
                 startActivity(intent);
                 break;
         }
@@ -198,13 +194,14 @@ public class MainActivity extends AppCompatActivity implements AdapterSprintList
 
     @Override
     public void onSprintItemClick(String key) {
-        Intent intent = new Intent(this, DetailActivity.class);
+        Intent intent = new Intent(this, SprintDetailActivity.class);
         intent.putExtra(INTENT_SPRINT_ID, key);
         startActivity(intent);
     }
 
     public void activateFAB(View view){
         Intent intent = new Intent(this, NewDayActivity.class);
+
         startActivity(intent);
 //        Snackbar.make(view, "Here's a Snackbar", Snackbar.LENGTH_LONG)
 //                .setAction("Action", null)

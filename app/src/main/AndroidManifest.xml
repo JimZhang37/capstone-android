@@ -11,17 +11,18 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".DetailDayActivity"></activity>
+        <activity android:name=".DayDetailActivity"></activity>
         <activity
-            android:name=".AddDayActivity"
-            android:parentActivityName=".DetailActivity" />
+            android:name=".DayAddActivity"
+            android:parentActivityName=".SprintDetailActivity" />
         <activity android:name=".NewDayActivity" />
         <activity
-            android:name=".DetailActivity"
+            android:name=".SprintDetailActivity"
             android:launchMode="singleTop"
-            android:parentActivityName=".MainActivity" />
-        <activity android:name=".AddActivity" />
-        <activity android:name=".MainActivity">
+            android:parentActivityName=".SprintListActivity" />
+        <activity android:name=".SprintAddActivity"
+            android:parentActivityName=".SprintListActivity"/>
+        <activity android:name=".SprintListActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
