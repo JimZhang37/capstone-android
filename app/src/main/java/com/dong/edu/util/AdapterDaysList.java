@@ -17,12 +17,19 @@ import java.util.List;
 public class AdapterDaysList extends RecyclerView.Adapter<ViewHolderDay> {
 
     private List<DocumentSnapshot> mDocumentList;
-
+    private DayClickListener mListener;
 
     public void setupData(List<DocumentSnapshot> list){
         mDocumentList = list;
         notifyDataSetChanged();
-        Day day = list.get(0).toObject(Day.class);
+    }
+
+    public AdapterDaysList(DayClickListener mListener) {
+        this.mListener = mListener;
+    }
+
+    public interface DayClickListener{
+        void onDayItemClick(int position);
     }
 
     @NonNull
@@ -36,7 +43,8 @@ public class AdapterDaysList extends RecyclerView.Adapter<ViewHolderDay> {
     @Override
     public void onBindViewHolder(@NonNull ViewHolderDay holder, int position) {
         Day day = mDocumentList.get(position).toObject(Day.class);
-        holder.bindData(day);
+        DocumentSnapshot Do = mDocumentList.get(position);
+        holder.bindData(day,position,mListener);
     }
 
     @Override

@@ -27,9 +27,10 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.Arrays;
 import java.util.List;
 
-public class DetailActivity extends AppCompatActivity {
+public class DetailActivity extends AppCompatActivity implements AdapterDaysList.DayClickListener {
     private static final String TAG = DetailActivity.class.getSimpleName();
     public static final String INTENT_SPRINT_ID_DETAIL = "SPRINT_UID_DETAIL";
+    public static final String INTENT_INT_POSITION = "INTENT_INT_POSITION";
     private String mUID;
     private ActivityDetailBinding dataBinding;
     private FirebaseAuth mFirebaseAuth;
@@ -59,7 +60,7 @@ public class DetailActivity extends AppCompatActivity {
         ab.setDisplayHomeAsUpEnabled(true);
         ab.setTitle("Detailed Sprint");
 
-        adapter = new AdapterDaysList();
+        adapter = new AdapterDaysList(this);
         dataBinding.recyclerDays.setAdapter(adapter);
 
     }
@@ -170,11 +171,11 @@ public class DetailActivity extends AppCompatActivity {
         }
     }
 
-    public void openDetailDay(View view){
+    public void openAddlDay(View view){
         if(mSprint.getDayNumber() == null){
             return;
         }
-        Intent intent = new Intent(this, DetailDayActivity.class);
+        Intent intent = new Intent(this, AddDayActivity.class);
         intent.putExtra(INTENT_SPRINT_ID_DETAIL,mDocumentID);
         intent.putExtra(INTENT_SPRINT_DAY_NUM, mSprint.getDayNumber());
         startActivity(intent);
@@ -196,5 +197,13 @@ public class DetailActivity extends AppCompatActivity {
                         }
                     });
         }
+    }
+
+    @Override
+    public void onDayItemClick(int position) {
+        Intent intent = new Intent(this, DetailDayActivity.class);
+        intent.putExtra(INTENT_SPRINT_ID_DETAIL,mDocumentID);
+        intent.putExtra(INTENT_INT_POSITION, position);
+        startActivity(intent);
     }
 }
