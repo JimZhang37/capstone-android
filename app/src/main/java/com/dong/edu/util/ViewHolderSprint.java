@@ -10,8 +10,6 @@ import com.dong.edu.R;
 import com.dong.edu.data.Sprint;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 
 public class ViewHolderSprint extends RecyclerView.ViewHolder {
     private TextView mSprintName;
@@ -43,10 +41,10 @@ public class ViewHolderSprint extends RecyclerView.ViewHolder {
 
     public void bind(Sprint sprint, String id, AdapterSprintList.SprintClickListener listener){
         mSprintName.setText(sprint.getSprintName());
-        mSprintDescription.setText(sprint.getMessage());
-        mStartedDate.setText(sprint.getStartedDateString());
-        mEndedDate.setText(sprint.getEndedDateString());
-        mStatus.setText(sprint.getStatus());
+        mSprintDescription.setText(sprint.message());
+        mStartedDate.setText(sprint.startedDateString());
+        mEndedDate.setText(sprint.endedDateString());
+        mStatus.setText(sprint.status());
 
         mSprintID = id;
         mListener = listener;

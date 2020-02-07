@@ -13,6 +13,7 @@ import com.google.android.material.card.MaterialCardView;
 import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.List;
+import java.util.ListIterator;
 
 public class AdapterSprintList extends RecyclerView.Adapter<ViewHolderSprint> {
 
@@ -20,23 +21,27 @@ public class AdapterSprintList extends RecyclerView.Adapter<ViewHolderSprint> {
         void onSprintItemClick(String key);
     }
 
-    private List<DocumentSnapshot> mList;
+//    private List<DocumentSnapshot> mList;
     private SprintClickListener mListener;
+
+    private List<Sprint> mSprintList;
+    private List<String> mDocList;
 
     public AdapterSprintList(SprintClickListener listener){
         mListener = listener;
     }
 
-    public void setupData(List<DocumentSnapshot> list) {
-        mList = list;
+    public void setupData(List<Sprint> sprints, List<String> docIDs) {
+        mSprintList = sprints;
+        mDocList = docIDs;
         notifyDataSetChanged();
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolderSprint holder, int position) {
 
-        String sprintID = mList.get(position).getId();
-        Sprint sprint = mList.get(position).toObject(Sprint.class);
+        String sprintID = mDocList.get(position);
+        Sprint sprint = mSprintList.get(position);
         holder.bind(sprint, sprintID, mListener);
     }
 
@@ -50,9 +55,9 @@ public class AdapterSprintList extends RecyclerView.Adapter<ViewHolderSprint> {
 
     @Override
     public int getItemCount() {
-        if (mList == null) {
+        if (mSprintList == null) {
             return 0;
         }
-        return mList.size();
+        return mSprintList.size();
     }
 }

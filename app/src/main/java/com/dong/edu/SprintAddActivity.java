@@ -27,7 +27,9 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 public class SprintAddActivity extends AppCompatActivity  {
@@ -55,6 +57,7 @@ public class SprintAddActivity extends AppCompatActivity  {
         dataBinding.button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 Log.d(TAG, "value of mySprint is " + mSprint.getSprintName() + mSprint.getSprintTime());
                 db.collection(mUID)
                         .add(mSprint)
@@ -62,9 +65,10 @@ public class SprintAddActivity extends AppCompatActivity  {
                             @Override
                             public void onSuccess(DocumentReference documentReference) {
                                 Log.d(TAG, "DocumentSnapshot added with ID: " + documentReference.getId());
-                                mSprint.setSprintName("");
-                                mSprint.setSprintTime("");
-                                dataBinding.setMySprint(mSprint);
+//                                mSprint.setSprintName("");
+//                                mSprint.setSprintTime("");
+//                                dataBinding.setMySprint(mSprint);
+                                //TODO if it takes a long time to be called, the customer will wait.
                                 Intent intent = new Intent(SprintAddActivity.this, SprintDetailActivity.class);
                                 intent.putExtra(SprintListActivity.INTENT_SPRINT_ID,documentReference.getId());
                                 startActivity(intent);
@@ -164,8 +168,14 @@ public class SprintAddActivity extends AppCompatActivity  {
 
         picker.addOnPositiveButtonClickListener(new MaterialPickerOnPositiveButtonClickListener<Pair<Long, Long>>() {
             @Override public void onPositiveButtonClick(Pair<Long,Long> selection) {
-                mSprint.setmStartDate(selection.first);
-                mSprint.setmEndDate(selection.second);
+                mSprint.initSprint(selection.first,selection.second);
+
+                Date start = new Date(selection.first);
+                Date end = new Date(selection.second);
+                SimpleDateFormat dataFormat = new SimpleDateFormat("MM/dd/yyyy");
+                dataBinding.txStartDate.setText(dataFormat.format(start));
+                dataBinding.txEndDate.setText(dataFormat.format(end));
+
             }
         });
 

@@ -15,8 +15,11 @@ import android.widget.Toast;
 import com.dong.edu.data.Day;
 import com.dong.edu.data.Sprint;
 import com.dong.edu.databinding.ActivityDetailBinding;
+import com.dong.edu.databinding.ActivitySprintEvaluateBinding;
 import com.dong.edu.util.AdapterDaysList;
 import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -29,19 +32,20 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FirebaseStorage;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class SprintDetailActivity extends AppCompatActivity implements AdapterDaysList.DayClickListener {
+import static com.dong.edu.SprintDetailActivity.INTENT_SPRINT_ID_DETAIL;
+
+public class SprintEvaluateActivity extends AppCompatActivity {
+    private ActivitySprintEvaluateBinding dataBinding;
     private static final String TAG = SprintDetailActivity.class.getSimpleName();
-    public static final String INTENT_SPRINT_ID_DETAIL = "SPRINT_UID_DETAIL";
-    public static final String INTENT_INT_POSITION = "INTENT_INT_POSITION";
 
     private String mUID;
-    private ActivityDetailBinding dataBinding;
     private FirebaseAuth mFirebaseAuth;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
     public static final int RC_SIGN_IN = 1;
@@ -50,38 +54,33 @@ public class SprintDetailActivity extends AppCompatActivity implements AdapterDa
     private String mDocumentID;
     private Sprint mSprint;
     private FirebaseUser mCurrentUser;
-    public static final String INTENT_SPRINT_DAY_NUM = "INTENT_SPRINT_DAY_NUM";
     private AdapterDaysList adapter;
     private ListenerRegistration registration;
     private ListenerRegistration registration2;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        dataBinding = DataBindingUtil.setContentView(this, R.layout.activity_detail);
+        dataBinding = DataBindingUtil.setContentView(this, R.layout.activity_sprint_evaluate);
 
-
-        mDocumentID = getIntent().getStringExtra(SprintListActivity.INTENT_SPRINT_ID);
-        dataBinding.setDocumentID(mDocumentID);
-
+        mDocumentID = getIntent().getStringExtra(INTENT_SPRINT_ID_DETAIL);
         mFirebaseAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
-        setSupportActionBar(dataBinding.toolbar);
+
+        setSupportActionBar(dataBinding.toolbarEvaluate);
         ActionBar ab = getSupportActionBar();
         ab.setDisplayHomeAsUpEnabled(true);
-        ab.setTitle("Detailed Sprint");
-
-        adapter = new AdapterDaysList(this);
-        dataBinding.recyclerDays.setAdapter(adapter);
+        ab.setTitle("Evaluate Sprint");
 
         mAuthStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
-                    Toast.makeText(SprintDetailActivity.this, "user is signed in!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SprintEvaluateActivity.this, "user is signed in!", Toast.LENGTH_SHORT).show();
 
-                    onSignInInitilizer(user.getDisplayName(), user.getUid());
+                    onSignInInitilizer(user.getUid());
 
                 } else {
                     onSignOutCleanUp();
@@ -101,8 +100,9 @@ public class SprintDetailActivity extends AppCompatActivity implements AdapterDa
                 }
             }
         };
-    }
 
+
+    }
 
     @Override
     protected void onPause() {
@@ -132,47 +132,17 @@ public class SprintDetailActivity extends AppCompatActivity implements AdapterDa
         }
     }
 
-    private void onSignInInitilizer(String name, String id) {
-        mUserName = name;
-        mUID = id;
+    private void onSignInInitilizer(String uid) {
+        mUID = uid;
         attachDatabaseReadListener();
-
     }
 
     private void onSignOutCleanUp() {
-        mUID = null;
-        mUserName = "";
         detachDatabaseReadListener();
     }
 
-
     private void attachDatabaseReadListener() {
-        //setup listener for days' adapter
-        CollectionReference query = db.collection(mUID)
-                .document(mDocumentID)
-                .collection("Days");
-//                .whereEqualTo("pictureUri", true);
-        registration = query.addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                if (e != null) {
-                    Log.e(TAG, "Listen failed" + e.getMessage());
-                    return;
-                }
-                List<Day> days = new ArrayList<>();
-                List<String> docIds = new ArrayList<>();
-                for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
-                    docIds.add(doc.getId());
-                    days.add(doc.toObject(Day.class));
-                }
 
-                Collections.reverse(days);
-                Collections.reverse(docIds);
-                adapter.setupData(days, docIds);
-
-                Log.d(TAG, "Listen Successed");
-            }
-        });
 
         //setup listener for mSprint;
         DocumentReference docRef = db.collection(mUID).document(mDocumentID);
@@ -187,24 +157,8 @@ public class SprintDetailActivity extends AppCompatActivity implements AdapterDa
                 if (snapshot != null && snapshot.exists()) {
                     Log.d(TAG, "Current data: " + snapshot.getData());
                     mSprint = snapshot.toObject(Sprint.class);
-                    dataBinding.setSprint(mSprint);
-                    switch (mSprint.getmStatus()) {
-                        case 1:
-                        case 3:
-                        case 4:
-                            dataBinding.materialButton.setVisibility(View.VISIBLE);
-                            dataBinding.btnEvaluate.setVisibility(View.GONE);
-                            return;
+                    dataBinding.setMySprint(mSprint);
 
-                        case 2:
-                            dataBinding.materialButton.setVisibility(View.GONE);
-                            dataBinding.btnEvaluate.setVisibility(View.VISIBLE);
-                            return;
-                        default:
-                            dataBinding.materialButton.setVisibility(View.VISIBLE);
-                            dataBinding.btnEvaluate.setVisibility(View.GONE);
-                            return;
-                    }
                 } else {
                     Log.d(TAG, "Current data: null");
                 }
@@ -214,42 +168,33 @@ public class SprintDetailActivity extends AppCompatActivity implements AdapterDa
     }
 
     private void detachDatabaseReadListener() {
-        registration.remove();
+
         registration2.remove();
     }
 
-    /**
-     * Go to DayAddActivity to add a new day for Today
-     *
-     * @param view
-     */
-    public void openAddDay(View view) {
-        if (mSprint == null || mSprint.dayNumber() == null) {
-            Snackbar.make(dataBinding.coordinatorSprintDetail, "Please wait", Snackbar.LENGTH_SHORT).show();
+    public void evaluateClick(View view){
+        if(mSprint.getEvaluation() == "" ){
+            Snackbar.make(dataBinding.coordinatorEvaluate,"Please input values", Snackbar.LENGTH_SHORT).show();
             return;
         }
-        Intent intent = new Intent(this, DayAddActivity.class);
-        intent.putExtra(INTENT_SPRINT_ID_DETAIL, mDocumentID);
-        intent.putExtra(INTENT_SPRINT_DAY_NUM, mSprint.dayNumber());
-        startActivity(intent);
+        mSprint.setmStatus(3);
+        db.collection(mUID)
+                .document(mDocumentID)
+                .set(mSprint)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+
+                        finish();
+                    }
+                })
+
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error adding document", e);
+                    }
+                });
     }
 
-    /**
-     * Go to DayDetailActivity to show the details of the chosen day
-     *
-     * @param position
-     */
-    @Override
-    public void onDayItemClick(int position) {
-        Intent intent = new Intent(this, DayDetailActivity.class);
-        intent.putExtra(INTENT_SPRINT_ID_DETAIL, mDocumentID);
-        intent.putExtra(INTENT_INT_POSITION, position);
-        startActivity(intent);
-    }
-
-    public void evaluateSprint(View view){
-        Intent intent = new Intent(this, SprintEvaluateActivity.class);
-        intent.putExtra(INTENT_SPRINT_ID_DETAIL,mDocumentID);
-        startActivity(intent);
-    }
 }

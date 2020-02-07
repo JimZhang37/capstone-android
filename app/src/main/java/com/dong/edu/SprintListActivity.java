@@ -9,6 +9,7 @@ import androidx.databinding.DataBindingUtil;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -16,40 +17,52 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.dong.edu.data.Sprint;
 import com.dong.edu.databinding.ActivityMainBinding;
 import com.dong.edu.util.AdapterSprintList;
 import com.firebase.ui.auth.AuthUI;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 
 
 public class SprintListActivity extends AppCompatActivity implements AdapterSprintList.SprintClickListener {
     public static final int RC_SIGN_IN = 1;
     public static final String INTENT_SPRINT_ID = "SPRINT_UID";
-
-
+    private static final String TAG = SprintListActivity.class.getSimpleName();
 
     private ActivityMainBinding dataBinding;
+
     private FirebaseAuth mFirebaseAuth;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
 
-    private String mUID;
+
     private FirebaseFirestore db;
-    private DocumentReference docRef;
+
+
     private AdapterSprintList adapter;
-    private FirebaseUser mCurrentUser;
+    private String mUID;
+    private ListenerRegistration registration;
+    private Query query;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        dataBinding = DataBindingUtil.setContentView(this,R.layout.activity_main);
+        dataBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
 
         db = FirebaseFirestore.getInstance();
 
@@ -60,8 +73,35 @@ public class SprintListActivity extends AppCompatActivity implements AdapterSpri
 
         setSupportActionBar(dataBinding.toolbar);
         ActionBar ab = getSupportActionBar();
-//        ab.setDisplayHomeAsUpEnabled(true);
         ab.setTitle("Sprint List");
+
+        mAuthStateListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+                if (user != null) {
+                    Toast.makeText(SprintListActivity.this, "user is signed in!", Toast.LENGTH_SHORT).show();
+
+                    onSignedInInitialize(user.getDisplayName(), user.getUid());
+
+                } else {
+                    onSignedOutCleanup();
+                    // Choose authentication providers
+                    List<AuthUI.IdpConfig> providers = Arrays.asList(
+                            new AuthUI.IdpConfig.EmailBuilder().build(),
+                            new AuthUI.IdpConfig.GoogleBuilder().build());
+
+                    // Create and launch sign-in intent
+                    startActivityForResult(
+                            AuthUI.getInstance()
+                                    .createSignInIntentBuilder()
+                                    .setIsSmartLockEnabled(false)
+                                    .setAvailableProviders(providers)
+                                    .build(),
+                            RC_SIGN_IN);
+                }
+            }
+        };
 
     }
 
@@ -78,50 +118,11 @@ public class SprintListActivity extends AppCompatActivity implements AdapterSpri
         }
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        mCurrentUser = mFirebaseAuth.getCurrentUser();
-
-        if(mCurrentUser !=null){
-            mUID = mCurrentUser.getUid();
-            getData();
-        }
-    }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (mAuthStateListener == null) {
-            mAuthStateListener = new FirebaseAuth.AuthStateListener() {
-                @Override
-                public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                    FirebaseUser user = firebaseAuth.getCurrentUser();
-                    if (user != null) {
-                        Toast.makeText(SprintListActivity.this, "user is signed in!", Toast.LENGTH_SHORT).show();
-
-                        onSignInInitilizer(user.getDisplayName(), user.getUid());
-
-                    } else {
-                        onSignOutCleanUp();
-                        // Choose authentication providers
-                        List<AuthUI.IdpConfig> providers = Arrays.asList(
-                                new AuthUI.IdpConfig.EmailBuilder().build(),
-                                new AuthUI.IdpConfig.GoogleBuilder().build());
-
-                        // Create and launch sign-in intent
-                        startActivityForResult(
-                                AuthUI.getInstance()
-                                        .createSignInIntentBuilder()
-                                        .setIsSmartLockEnabled(false)
-                                        .setAvailableProviders(providers)
-                                        .build(),
-                                RC_SIGN_IN);
-                    }
-                }
-            };
-            mFirebaseAuth.addAuthStateListener(mAuthStateListener);
-        }
+        mFirebaseAuth.addAuthStateListener(mAuthStateListener);
     }
 
     @Override
@@ -129,35 +130,64 @@ public class SprintListActivity extends AppCompatActivity implements AdapterSpri
         super.onPause();
         if (mAuthStateListener != null) {
             mFirebaseAuth.removeAuthStateListener(mAuthStateListener);
-            mAuthStateListener = null;
+        }
+        detachDatabaseReadListener();
+    }
+
+
+    private void onSignedInInitialize(String name, String id) {
+
+        mUID = id;
+//        getData();
+        attachDatabaseReadListener();
+    }
+
+    private void onSignedOutCleanup() {
+        mUID = null;
+        adapter.setupData(null, null);
+        detachDatabaseReadListener();
+    }
+
+    private void attachDatabaseReadListener() {
+        long currentTime = Calendar.getInstance().getTimeInMillis();
+
+        query = db.collection(mUID)
+                .whereLessThan("mStartDate", currentTime)
+                .orderBy("mStartDate")
+                .orderBy("mEndDate");
+        registration = query
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                        if (e != null) {
+                            Log.d(TAG, "Listen failed");
+                            return;
+                        }
+                        List<Sprint> sprints = new ArrayList<>();
+                        List<String> docIds = new ArrayList<>();
+                        for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
+                            sprints.add(doc.toObject(Sprint.class));
+                            docIds.add(doc.getId());
+
+                        }
+                        adapter.setupData(sprints, docIds);
+                        Log.d(TAG, "Listen Successed");
+                    }
+                });
+
+    }
+
+    private void detachDatabaseReadListener() {
+        if (registration != null) {
+            registration.remove();
         }
     }
 
 
-    private void onSignInInitilizer(String name, String id) {
-
-        mUID = id;
-        getData();
-
-    }
-
-    private void onSignOutCleanUp() {
-        mUID = null;
-
-        adapter.setupData(null);
-    }
-
-
-
-
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-//
-//        if(item.getItemId() == R.id.sign_out){
-//            AuthUI.getInstance().signOut(this);
-//            return true;
-//        }
-        switch (item.getItemId()){
+
+        switch (item.getItemId()) {
             case R.id.sign_out:
                 AuthUI.getInstance().signOut(this);
                 break;
@@ -176,22 +206,6 @@ public class SprintListActivity extends AppCompatActivity implements AdapterSpri
         return true;
     }
 
-
-    private void getData() {
-        if (mUID != null) {
-            db.collection(mUID).get()
-                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                            if (task.isSuccessful()) {
-                                adapter.setupData(task.getResult().getDocuments());
-
-                            }
-                        }
-                    });
-        }
-    }
-
     @Override
     public void onSprintItemClick(String key) {
         Intent intent = new Intent(this, SprintDetailActivity.class);
@@ -199,12 +213,9 @@ public class SprintListActivity extends AppCompatActivity implements AdapterSpri
         startActivity(intent);
     }
 
-    public void activateFAB(View view){
-        Intent intent = new Intent(this, NewDayActivity.class);
-
+    public void activateFAB(View view) {
+        Intent intent = new Intent(this, SprintAddActivity.class);
         startActivity(intent);
-//        Snackbar.make(view, "Here's a Snackbar", Snackbar.LENGTH_LONG)
-//                .setAction("Action", null)
-//                .show();
     }
 }
+

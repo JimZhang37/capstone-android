@@ -2,8 +2,7 @@
 
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.dong.edu.SprintAddActivity">
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
@@ -13,8 +12,10 @@
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/coordinator_evaluate"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
 
         <com.google.android.material.appbar.AppBarLayout
             android:id="@+id/toolbar_container"
@@ -27,7 +28,7 @@
                 app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
                 <androidx.appcompat.widget.Toolbar
-                    android:id="@+id/toolbar"
+                    android:id="@+id/toolbar_evaluate"
                     android:layout_width="match_parent"
                     android:layout_height="?actionBarSize"
                     android:theme="@style/Widget.AppCompat.ActionBar"
@@ -40,86 +41,67 @@
 
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
-
             android:layout_height="match_parent"
             app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                tools:context="com.dong.edu.SprintEvaluateActivity">
 
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/text_sprint_name"
+                    android:id="@+id/textInputLayout3"
                     android:layout_width="@dimen/edit_text_width"
                     android:layout_height="@dimen/edit_text_height"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginTop="32dp"
-                    android:hint="@string/hint_sprint_name"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:hint="Have you achieved your target?"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/tx_sprint_name_edit"
+                        android:id="@+id/text_sprint_evaluation"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="text"
+                        android:text="@={mySprint.evaluation}" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/textInputLayout4"
+                    android:layout_width="@dimen/edit_text_width"
+                    android:layout_height="@dimen/edit_text_height"
+                    android:layout_marginStart="16dp"
+                    android:hint="Do you like it?"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/textInputLayout3"
+                    app:layout_constraintTop_toTopOf="@+id/textInputLayout3">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/text_sprint_q1"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="text"
                         android:text="@={mySprint.sprintName}" />
+
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/text_sprint_description"
-                    android:layout_width="@dimen/edit_text_width"
-                    android:layout_height="@dimen/edit_text_height"
-                    android:hint="@string/hint_sprint_description"
-                    android:layout_marginEnd="32dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/text_sprint_name">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/tx_sprint_description_edit"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="textMultiLine"
-                        android:text="@={mySprint.sprintTime}" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-
                 <com.google.android.material.button.MaterialButton
-                    android:id="@+id/daterange_picker"
+                    android:id="@+id/button_evaluate"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-
-                    android:layout_marginTop="40dp"
-                    android:onClick="setupCalendar"
-                    android:text="@string/select_your_date_range"
-                    app:layout_constraintStart_toStartOf="@+id/text_sprint_name"
-                    app:layout_constraintTop_toBottomOf="@+id/text_sprint_name" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-
                     android:layout_marginTop="16dp"
-                    android:text="@string/button_add_sprint"
-                    app:layout_constraintStart_toStartOf="@+id/text_sprint_name"
-                    app:layout_constraintTop_toBottomOf="@+id/tx_start_date" />
-
-
-                <TextView
-                    android:id="@+id/tx_start_date"
-                    android:layout_width="@dimen/textview_width"
-                    android:layout_height="@dimen/textview_height"
-                    app:layout_constraintStart_toStartOf="@+id/text_sprint_name"
-                    app:layout_constraintTop_toBottomOf="@+id/daterange_picker" />
-
-                <TextView
-                    android:id="@+id/tx_end_date"
-                    android:layout_width="@dimen/textview_width"
-                    android:layout_height="@dimen/textview_height"
-                    app:layout_constraintEnd_toEndOf="@+id/text_sprint_description"
-                    app:layout_constraintTop_toBottomOf="@+id/daterange_picker" />
+                    android:onClick="evaluateClick"
+                    android:text="@string/btn_evaluate"
+                    app:layout_constraintStart_toStartOf="@+id/textInputLayout4"
+                    app:layout_constraintTop_toBottomOf="@+id/textInputLayout4" />
             </androidx.constraintlayout.widget.ConstraintLayout>
+
         </androidx.core.widget.NestedScrollView>
+
+
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+
 </layout>
+

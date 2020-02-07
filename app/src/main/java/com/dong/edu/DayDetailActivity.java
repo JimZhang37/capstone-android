@@ -3,10 +3,12 @@ package com.dong.edu;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Toast;
 
 import com.dong.edu.util.AdapterPager2;
@@ -41,7 +43,10 @@ public class DayDetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_day);
-//        getSupportActionBar().setTitle("Detail Day");
+        Toolbar toolbar = findViewById(R.id.toolbar_pager);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle("Detail Day");
 
         mDocumentID = getIntent().getStringExtra(INTENT_SPRINT_ID_DETAIL);
 
@@ -50,9 +55,11 @@ public class DayDetailActivity extends AppCompatActivity {
         adapter = new AdapterPager2();
         pager2.setAdapter(adapter);
 
-//        pager2.setCurrentItem(mCurrentItem);
+
         mFirebaseAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
+
+
     }
 
 

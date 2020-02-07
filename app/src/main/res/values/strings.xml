@@ -4,4 +4,13 @@
     <string name="hint_sprint_description">Sprint Description</string>
     <string name="button_add_sprint">Add Sprint</string>
     <string name="select_your_date_range">select your date range</string>
+    <string name="btn_tx_evaluate">Evaluate</string>
+    <string name="btn_tx_today">Add Today</string>
+    <string name="sprint_name">sprint Name</string>
+    <string name="documentid">documentID</string>
+    <string name="sprint_message">sprint message</string>
+    <string name="sprint_started_date">sprint started date</string>
+    <string name="sprint_ended_date">sprint ended date</string>
+    <string name="open_a_new_day">Open a new day</string>
+    <string name="btn_evaluate">Evaluate</string>
 </resources>
