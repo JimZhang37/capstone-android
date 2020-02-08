@@ -123,6 +123,7 @@ public class SprintListActivity extends AppCompatActivity implements AdapterSpri
     protected void onResume() {
         super.onResume();
         mFirebaseAuth.addAuthStateListener(mAuthStateListener);
+
     }
 
     @Override

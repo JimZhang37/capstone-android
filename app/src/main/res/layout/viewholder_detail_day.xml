@@ -15,7 +15,8 @@
             <ImageView
                 android:id="@+id/iv_day_image"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/the_progress_of_a_day_in_a_picture"/>
 
             <TextView
                 android:id="@+id/tv_day_description"

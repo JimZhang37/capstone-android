@@ -13,4 +13,10 @@
     <string name="sprint_ended_date">sprint ended date</string>
     <string name="open_a_new_day">Open a new day</string>
     <string name="btn_evaluate">Evaluate</string>
+    <string name="create_new_sprint">Create new sprint</string>
+    <string name="recycler_view_content_description">list of sprints</string>
+    <string name="the_progress_of_a_day_in_a_picture">the progress of a day in a picture</string>
+    <string name="appwidget_text">SPRINTS OF TODAY</string>
+    <string name="add_widget">Add widget</string>
+    <string name="sprints_needs_your_attention">sprints needs your attention</string>
 </resources>
