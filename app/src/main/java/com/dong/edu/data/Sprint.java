@@ -127,7 +127,7 @@ public class Sprint {
     }
 
     public String dayNumber() {
-        if (status() != "in progress!") {
+        if (getmStatus() != 1) {
             return null;
         }
         Calendar now = Calendar.getInstance();

@@ -190,9 +190,15 @@ public class SprintDetailActivity extends AppCompatActivity implements AdapterDa
                     dataBinding.setSprint(mSprint);
                     switch (mSprint.getmStatus()) {
                         case 1:
-                        case 3:
-                        case 4:
                             dataBinding.materialButton.setVisibility(View.VISIBLE);
+                            dataBinding.btnEvaluate.setVisibility(View.GONE);
+                            return;
+                        case 3:
+                            dataBinding.materialButton.setVisibility(View.GONE);
+                            dataBinding.btnEvaluate.setVisibility(View.GONE);
+                            return;
+                        case 4:
+                            dataBinding.materialButton.setVisibility(View.GONE);
                             dataBinding.btnEvaluate.setVisibility(View.GONE);
                             return;
 

@@ -7,8 +7,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -30,7 +32,9 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayOutputStream;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 
 public class DayAddActivity extends AppCompatActivity {
@@ -41,6 +45,7 @@ public class DayAddActivity extends AppCompatActivity {
     private FirebaseAuth.AuthStateListener mAuthStateListener;
     public static final int RC_SIGN_IN = 1;
     private static final int RC_PHOTO_PICKER = 2;
+    static final int REQUEST_IMAGE_CAPTURE = 3;
     private String mUserName;
     private String mUID;
     private ActivityAddDayBinding dataBinding;
@@ -129,10 +134,11 @@ public class DayAddActivity extends AppCompatActivity {
                 finish();
             }
         }
-        if (requestCode == RC_PHOTO_PICKER) {
+        if (requestCode == RC_PHOTO_PICKER ) {
             if (resultCode == RESULT_OK) {
                 //TODO progress bar, start
                 dataBinding.spinner.setVisibility(View.VISIBLE);
+
 
                 Uri selectedImage = data.getData();
                 dataBinding.imageToUpload.setImageURI(selectedImage);
@@ -168,6 +174,55 @@ public class DayAddActivity extends AppCompatActivity {
 
             }
         }
+
+        if (requestCode == REQUEST_IMAGE_CAPTURE ) {
+            if (resultCode == RESULT_OK) {
+                //TODO progress bar, start
+                dataBinding.spinner.setVisibility(View.VISIBLE);
+
+                Bundle extras = data.getExtras();
+                Bitmap imageBitmap = (Bitmap) extras.get("data");
+                dataBinding.imageToUpload.setImageBitmap(imageBitmap);
+
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                byte[] data_image = baos.toByteArray();
+
+
+                StorageReference photoRef = storageReference.child(String.valueOf(Calendar.getInstance().getTime().getTime()));
+
+                photoRef.putBytes(data_image).continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                    @Override
+                    public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                        if (!task.isSuccessful()) {
+                            throw task.getException();
+                        }
+
+                        // Continue with the task to get the download URL
+                        return photoRef.getDownloadUrl();
+                    }
+                }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Uri> task) {
+                        if (task.isSuccessful()) {
+                            Uri downloadUri = task.getResult();
+
+                            mDay.setPictureUri(downloadUri.toString());
+
+
+                            //TODO progress bar stop, save downloaduri, handle activity lifecycle, etc.
+                            dataBinding.spinner.setVisibility(View.GONE);
+
+                        } else {
+                            // Handle failures
+                            // ...
+                        }
+                    }
+                });
+
+            }
+        }
+
     }
 
     private void onSignInInitilizer(String name, String id) {
@@ -218,5 +273,12 @@ public class DayAddActivity extends AppCompatActivity {
         intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
         startActivityForResult(Intent.createChooser(intent, "Complete action using"), RC_PHOTO_PICKER);
 
+    }
+
+    public void takePicture(View view) {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+        }
     }
 }

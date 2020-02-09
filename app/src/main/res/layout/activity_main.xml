@@ -51,6 +51,7 @@
             android:layout_gravity="bottom|end"
             android:layout_margin="@dimen/fab_margin"
             android:onClick="activateFAB"
+            android:src="@drawable/ic_add_24px"
             android:contentDescription="@string/create_new_sprint"
             app:fabSize="normal" />
 

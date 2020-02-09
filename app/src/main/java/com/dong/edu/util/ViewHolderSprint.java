@@ -16,7 +16,7 @@ public class ViewHolderSprint extends RecyclerView.ViewHolder {
     private TextView mSprintDescription;
     private TextView mStartedDate;
     private TextView mEndedDate;
-    private TextView mStatus;
+
     private String mSprintID;
     private AdapterSprintList.SprintClickListener mListener;
     private String mStartedDateString;
@@ -29,7 +29,7 @@ public class ViewHolderSprint extends RecyclerView.ViewHolder {
         mSprintDescription = itemView.findViewById(R.id.sprint_description_viewholder);
         mStartedDate = itemView.findViewById(R.id.sprint_start_date_viewholder);
         mEndedDate = itemView.findViewById(R.id.sprint_end_date_viewholder);
-        mStatus = itemView.findViewById(R.id.sprint_status);
+
 
         itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -44,7 +44,7 @@ public class ViewHolderSprint extends RecyclerView.ViewHolder {
         mSprintDescription.setText(sprint.message());
         mStartedDate.setText(sprint.startedDateString());
         mEndedDate.setText(sprint.endedDateString());
-        mStatus.setText(sprint.status());
+
 
         mSprintID = id;
         mListener = listener;

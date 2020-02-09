@@ -2,10 +2,10 @@
 
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    >
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="myDay"
             type="com.dong.edu.data.Day" />
@@ -41,37 +41,25 @@
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
-            >
+            app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical">
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/textInputLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="90dp"
-                    android:hint="Not Used Now"
-                    >
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/text_day_uri"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="text"
-                        android:text="" />
-                </com.google.android.material.textfield.TextInputLayout>
+                <ProgressBar
+                    android:id="@+id/spinner"
+                    android:layout_gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/textInputLayout2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="90dp"
-                    android:hint="Day Description"
-                    >
+                    android:hint="@string/hint_day_description">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/text_day_description"
@@ -81,29 +69,50 @@
                         android:text="@={myDay.description}" />
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <ProgressBar
+                <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/spinner"/>
+                    android:layout_gravity="center"
+                    android:text="@string/photo_of_today" />
+
 
                 <ImageView
                     android:id="@+id/image_to_upload"
+                    android:layout_width="100dp"
+                    android:layout_height="150dp"
+                    android:layout_gravity="center"
+                    android:background="@color/design_default_color_secondary_variant"
+                    android:contentDescription="@string/photo_of_today"
+                    android:scaleType="centerCrop" />
+
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
 
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/button_select_photo"
+                        android:layout_width="@dimen/textview_width"
+                        android:layout_height="@dimen/textview_height"
+                        android:layout_margin="16dp"
+                        android:onClick="selectPicture"
+                        android:text="@string/select_a_photo" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/button_take_photo"
+                        android:layout_width="@dimen/textview_width"
+                        android:layout_height="@dimen/textview_height"
+                        android:layout_margin="16dp"
+                        android:onClick="takePicture"
+                        android:text="@string/take_a_photo" />
+                </LinearLayout>
 
                 <com.google.android.material.button.MaterialButton
-                    android:id="@+id/button_select_photo"
                     android:layout_width="@dimen/textview_width"
                     android:layout_height="@dimen/textview_height"
-                    android:onClick="selectPicture"
-                    />
-
-                <com.google.android.material.button.MaterialButton
-                    android:layout_width="@dimen/textview_width"
-                    android:layout_height="@dimen/textview_height"
+                    android:layout_marginStart="16dp"
                     android:onClick="saveDayToCloud"
-                     />
+                    android:text="@string/save" />
 
             </LinearLayout>
 

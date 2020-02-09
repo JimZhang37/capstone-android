@@ -5,7 +5,7 @@
     <string name="button_add_sprint">Add Sprint</string>
     <string name="select_your_date_range">select your date range</string>
     <string name="btn_tx_evaluate">Evaluate</string>
-    <string name="btn_tx_today">Add Today</string>
+    <string name="btn_tx_today">Add Photo of Today</string>
     <string name="sprint_name">sprint Name</string>
     <string name="documentid">documentID</string>
     <string name="sprint_message">sprint message</string>
@@ -19,4 +19,20 @@
     <string name="appwidget_text">SPRINTS OF TODAY</string>
     <string name="add_widget">Add widget</string>
     <string name="sprints_needs_your_attention">sprints needs your attention</string>
+    <string name="menu_add_sprint">Add Sprint</string>
+    <string name="menu_sign_out">Sign Out</string>
+    <string name="hint_day_description">Day Description</string>
+    <string name="hint_not_used_now">Not Used Now</string>
+    <string name="tools_text_end_date">end date</string>
+    <string name="name">Name:</string>
+    <string name="description">Description:</string>
+    <string name="end">To:</string>
+    <string name="from">From:</string>
+
+    <string name="to">To:</string>
+    <string name="save">Save</string>
+    <string name="take_a_photo">Take A Photo</string>
+    <string name="select_a_photo">Select A Photo</string>
+    <string name="photo_of_today">Photo of today:</string>
+    <string name="image_description_day">Image description:</string>
 </resources>
